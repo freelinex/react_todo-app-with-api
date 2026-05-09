@@ -7,6 +7,8 @@ export interface Todo {
   completed: boolean;
 }
 
+export type FilterStatus = 'all' | 'active' | 'completed';
+
 export enum ErrorMessages {
   empty = '',
   notBeEmpty = 'Title should not be empty',
@@ -14,6 +16,12 @@ export enum ErrorMessages {
   deleteError = 'Unable to delete a todo',
   loadError = 'Unable to load todos',
   updateError = `Unable to update a todo`,
+}
+
+export enum FilterPatterns {
+  all = 'all',
+  active = 'active',
+  completed = 'completed',
 }
 
 export type TodoListProps = {
@@ -33,8 +41,8 @@ export type TodoListProps = {
 
 export type FooterProps = {
   todos: Todo[];
-  filter: string;
-  setFilter: (filter: string) => void;
+  filter: FilterStatus;
+  setFilter: (filter: FilterStatus) => void;
   checkComplete: boolean;
   handleClearCompleted: () => void;
 };

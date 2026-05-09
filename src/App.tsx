@@ -11,14 +11,21 @@ import {
   USER_ID,
 } from './api/todos';
 
-import { ErrorMessages, Todo } from './types/Types';
+import { ErrorMessages, FilterStatus, Todo } from './types/Types';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotifications } from './components/ErrorNotifications';
+import {
+  getCompletedTodos,
+  getFilteredTodos,
+  getHasCompletedTodos,
+  getIsAllTodosCompleted,
+  getTodosToToggle,
+} from './utils/functions';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<FilterStatus>('all');
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(
     ErrorMessages.empty,
   );
@@ -40,10 +47,9 @@ export const App: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const checkCompleteAll =
-    todos.length > 0 && todos.every(item => item.completed);
+  const checkCompleteAll = getIsAllTodosCompleted(todos);
 
-  const checkComplete = todos.length > 0 && todos.some(item => item.completed);
+  const checkComplete = getHasCompletedTodos(todos);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -102,7 +108,7 @@ export const App: React.FC = () => {
   };
 
   const handleClearCompleted = () => {
-    const completedTodos = todos.filter(todo => todo.completed);
+    const completedTodos = getCompletedTodos(todos);
 
     if (completedTodos.length === 0) {
       return;
@@ -171,10 +177,6 @@ export const App: React.FC = () => {
     setErrorMessage(ErrorMessages.empty);
   };
 
-  const handleEditedTitleChange = (value: string) => {
-    setEditedTitle(value);
-  };
-
   const handleCancelEditing = () => {
     setEditingTodoId(null);
     setEditedTitle('');
@@ -239,9 +241,7 @@ export const App: React.FC = () => {
   };
 
   const switchCompleteAll = () => {
-    const todosToToggle = checkCompleteAll
-      ? todos
-      : todos.filter(todo => !todo.completed);
+    const todosToToggle = getTodosToToggle(todos, checkCompleteAll);
 
     const toggledTodoIds = todosToToggle.map(todo => todo.id);
 
@@ -283,17 +283,7 @@ export const App: React.FC = () => {
       });
   };
 
-  const filteredTodos = todos.filter(post => {
-    if (filter === 'active') {
-      return !post.completed;
-    }
-
-    if (filter === 'completed') {
-      return post.completed;
-    }
-
-    return true;
-  });
+  const filteredTodos = getFilteredTodos(todos, filter);
 
   useLayoutEffect(() => {
     inputRef.current?.focus();
@@ -360,7 +350,7 @@ export const App: React.FC = () => {
           editingTodoId={editingTodoId}
           editedTitle={editedTitle}
           handleStartEditing={handleStartEditing}
-          handleEditedTitleChange={handleEditedTitleChange}
+          handleEditedTitleChange={setEditedTitle}
           handleCancelEditing={handleCancelEditing}
           handleSubmitEditing={handleSubmitEditing}
         />

@@ -1,4 +1,5 @@
-import { FooterProps } from '../types/Types';
+import { getActiveTodosCount } from '../utils/functions';
+import { FilterPatterns, FooterProps } from '../types/Types';
 
 export const Footer: React.FC<FooterProps> = ({
   todos,
@@ -10,7 +11,7 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${todos.filter(item => !item.completed).length} items left`}
+        {`${getActiveTodosCount(todos)} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -20,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({
             filter === 'all' ? 'filter__link selected' : 'filter__link'
           }
           data-cy="FilterLinkAll"
-          onClick={() => setFilter('all')}
+          onClick={() => setFilter(FilterPatterns.all)}
         >
           All
         </a>
@@ -31,7 +32,7 @@ export const Footer: React.FC<FooterProps> = ({
             filter === 'active' ? 'filter__link selected' : 'filter__link'
           }
           data-cy="FilterLinkActive"
-          onClick={() => setFilter('active')}
+          onClick={() => setFilter(FilterPatterns.active)}
         >
           Active
         </a>
@@ -42,7 +43,7 @@ export const Footer: React.FC<FooterProps> = ({
             filter === 'completed' ? 'filter__link selected' : 'filter__link'
           }
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilter('completed')}
+          onClick={() => setFilter(FilterPatterns.completed)}
         >
           Completed
         </a>

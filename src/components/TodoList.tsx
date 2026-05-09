@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { TodoListProps } from '../types/Types';
+import { Todo, TodoListProps } from '../types/Types';
 
 export const TodoList: React.FC<TodoListProps> = ({
   filteredTodos,
@@ -16,6 +16,17 @@ export const TodoList: React.FC<TodoListProps> = ({
   handleSubmitEditing,
 }) => {
   const editInputRef = useRef<HTMLInputElement>(null);
+
+  const cancelEdit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      handleCancelEditing();
+    }
+  };
+
+  const submitEdit = (event: React.FormEvent<HTMLFormElement>, todo: Todo) => {
+    event.preventDefault();
+    handleSubmitEditing(todo);
+  };
 
   useEffect(() => {
     if (editingTodoId !== null) {
@@ -48,12 +59,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           </label>
 
           {editingTodoId === todo.id ? (
-            <form
-              onSubmit={event => {
-                event.preventDefault();
-                handleSubmitEditing(todo);
-              }}
-            >
+            <form onSubmit={event => submitEdit(event, todo)}>
               <input
                 ref={editInputRef}
                 data-cy="TodoTitleField"
@@ -63,11 +69,7 @@ export const TodoList: React.FC<TodoListProps> = ({
                 value={editedTitle}
                 onChange={event => handleEditedTitleChange(event.target.value)}
                 onBlur={() => handleSubmitEditing(todo)}
-                onKeyUp={event => {
-                  if (event.key === 'Escape') {
-                    handleCancelEditing();
-                  }
-                }}
+                onKeyUp={cancelEdit}
               />
             </form>
           ) : (
